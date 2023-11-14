@@ -63,6 +63,21 @@ prop_test = function (city_name) {
   ) |>
     broom::tidy()}
 
-purrr::map(pull(homicide_city_state, city_state), prop_test)
+purrr::map_df(pull(homicide_city_state, city_state), prop_test)
+```
+
+```{r}
+city = data.frame(city_state = homicide_city_state$city_state)
+prob_test_city_state = purrr::map_df(pull(homicide_city_state, city_state), prop_test)
+prob_city_state = bind_cols(city, prob_test_city_state) 
+
+prob_city_state = arrange(prob_city_state, estimate)
+
+view(prob_city_state)
+
+ggplot(prob_city_state, aes(x = city_state, y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.1) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
 ```
 
