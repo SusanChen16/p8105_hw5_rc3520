@@ -1,0 +1,12 @@
+---
+title: "p8105_hw5_rc3520"
+author: "Ruyi Chen"
+date: "2023-11-14"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
