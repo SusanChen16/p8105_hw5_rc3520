@@ -82,21 +82,39 @@ ggplot(prob_city_state, aes(x = city_state, y = estimate)) +
 ```
 
 #Problem 2
-```{r}
-file_paths = list.files(path = "data/zip-data", pattern = "*.csv", full.names = TRUE)
-zip_file = do.call(rbind, lapply(file_paths, read.csv))
-zip = bind_cols(file_paths, zip_file)
-colnames(zip)[1] = "file_name"
-view(zip)
 
+```{r}
+file_paths=tibble(
+  files_name=list.files(path="data/zip-data", pattern = "*.csv",full.names = TRUE))  |> 
+  mutate(data=map(files_name,read.csv)) 
 zip_final =
-  zip |>
+  file_paths |>
+  unnest(everything()) |>
   mutate(
-    Id = as.numeric(gsub("\\D", "", file_name)),
-    arm = substr(file_name, start = 15, stop = 17)
+    id = as.numeric(gsub("\\D", "", files_name)),
+    arm = substr(files_name, start = 15, stop = 17)
   )|>
-  select(-file_name)|>
-  select(Id, arm, everything())
+  select(files_name,id, arm, everything())|>
+  pivot_longer(
+    cols=starts_with("week"),
+    names_to = "week",
+    values_to ="obs"
+  )|>
+mutate(week = as.numeric(gsub("\\D", "", week)))
 view(zip_final)
 ```
+
+##Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups
+```{r}
+ggplot(zip_final,aes(x = week, y = obs, color = files_name),data_df) +
+  geom_line()+
+  facet_wrap(.~arm)+
+  labs(
+    title="Observations over 8 weeks by Subject",
+    x="Week",
+    y="Observation",
+    color = "Subject"
+    )
+```
+
 
