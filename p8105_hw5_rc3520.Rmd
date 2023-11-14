@@ -9,8 +9,9 @@ output: github_document
 library(tidyverse)
 library(ggplot2)
 library(dplyr)
+library(broom)
 ```
-
+#Problem 1
 ```{r}
 homicide = 
   read_csv("data/homicide-data.csv") |>
@@ -31,8 +32,27 @@ homicide_city_state =
   ) |>
   janitor::clean_names()|>
   mutate_all(~coalesce(., 0))|>
-  mutate(total_homicie = closed_without_arrest + open_no_arrest + closed_by_arrest,
+  mutate(total_homicide = closed_without_arrest + open_no_arrest + closed_by_arrest,
     unsolved_homicide = closed_without_arrest + open_no_arrest)
 homicide_city_state
 ```
+
+```{r}
+baltimore_homicide =
+  homicide_city_state |>
+  filter(city_state == "Baltimore,MD")
+baltimore_homicide
+
+prop_test_result =
+  prop.test(
+  x = baltimore_homicide$unsolved_homicide,
+  n = baltimore_homicide$total_homicide
+  ) |>
+  broom::tidy() 
+
+prop_test_result |>
+  knitr::kable()
+```
+##The proportion of homicides that are unsolved in Baltimore is around 64.55607% (CI: 62.75625%, 66.31599%).
+
 
