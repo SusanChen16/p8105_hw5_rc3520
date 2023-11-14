@@ -6,7 +6,33 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
 ```
 
+```{r}
+homicide = 
+  read_csv("data/homicide-data.csv") |>
+  janitor::clean_names()|>
+  mutate(city_state = paste(city, state, sep = ","))
+view(homicide)
+```
+
+
+```{r}
+homicide_city_state =
+  homicide |>
+  group_by(city_state, disposition) |>
+  count(disposition) |>
+  pivot_wider(
+    names_from = disposition,
+    values_from = n
+  ) |>
+  janitor::clean_names()|>
+  mutate_all(~coalesce(., 0))|>
+  mutate(total_homicie = closed_without_arrest + open_no_arrest + closed_by_arrest,
+    unsolved_homicide = closed_without_arrest + open_no_arrest)
+homicide_city_state
+```
 
