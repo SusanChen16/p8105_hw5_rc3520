@@ -81,3 +81,22 @@ ggplot(prob_city_state, aes(x = city_state, y = estimate)) +
   theme(axis.text.x = element_text(angle = 60, hjust = 1))
 ```
 
+#Problem 2
+```{r}
+file_paths = list.files(path = "data/zip-data", pattern = "*.csv", full.names = TRUE)
+zip_file = do.call(rbind, lapply(file_paths, read.csv))
+zip = bind_cols(file_paths, zip_file)
+colnames(zip)[1] = "file_name"
+view(zip)
+
+zip_final =
+  zip |>
+  mutate(
+    Id = as.numeric(gsub("\\D", "", file_name)),
+    arm = substr(file_name, start = 15, stop = 17)
+  )|>
+  select(-file_name)|>
+  select(Id, arm, everything())
+view(zip_final)
+```
+
