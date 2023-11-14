@@ -55,4 +55,14 @@ prop_test_result |>
 ```
 ##The proportion of homicides that are unsolved in Baltimore is around 64.55607% (CI: 62.75625%, 66.31599%).
 
+```{r}
+prop_test = function (city_name) {
+    prop.test(
+  x = homicide_city_state$unsolved_homicide[homicide_city_state$city_state == city_name ],
+  n = homicide_city_state$total_homicide[homicide_city_state$city_state == city_name ]
+  ) |>
+    broom::tidy()}
+
+purrr::map(pull(homicide_city_state, city_state), prop_test)
+```
 
