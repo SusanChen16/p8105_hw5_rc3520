@@ -140,7 +140,7 @@ mean_6 =
   mutate(result_df = map(population_mean, pvalue_estimate_sim)) |> 
   unnest(result_df)
 ```
-
+##The Proportion of Times the Null was Rejected
 ```{r}
 ggplot_mean_6 =
   mean_6|>
@@ -156,5 +156,36 @@ ggplot(ggplot_mean_6,aes(x = population_mean, y = proportion)) +
   theme_minimal() +
   labs(x = "True Mean", y = "Power of the Test", title = "The Proportion of Times the Null was Rejected")
 ```
+## Describe the association between effect size and power：While the effect size increases, the power of the test will also increase.
 
+##The average estimate of μ̂ V.S.the true value of μ
+```{r}
+ggplot_mean_6_ave =
+  mean_6|>
+  group_by(population_mean)|>
+  mutate(estimated_ave_mean = mean(estimate))
 
+ggplot(ggplot_mean_6_ave,aes(x = population_mean, y = estimated_ave_mean)) +
+  geom_point() + 
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(x = "True Mean", y = "Average Estimated Mean", title = "The average estimate of μ̂ 
+ V.S.the true value of μ")
+```
+
+## the average estimate of μ̂ only in samples for which the null was rejected V.S. the true value of μ
+```{r}
+ggplot_mean_6_rejected =
+  mean_6|>
+  filter(p.value < 0.05)|>
+  group_by(population_mean)|>
+  mutate(estimated_ave_mean_rejected = mean(estimate))
+ggplot(ggplot_mean_6_rejected,aes(x = population_mean, y = estimated_ave_mean_rejected)) +
+  geom_point() + 
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(x = "True Mean", y = "Estimated_ave_mean_rejected", title = "the average estimate of μ̂ only in samples for which the null was rejected V.S. the true value of μ")  
+```
+##the sample average of μ̂ across tests for which the null is rejected is not approximately equal to the true value of μ especially when the ture mean is smaller than 4.
