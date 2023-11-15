@@ -117,4 +117,21 @@ ggplot(zip_final,aes(x = week, y = obs, color = files_name),data_df) +
     )
 ```
 
+#Problem 3
+#set the design elements and generate 5000 datasets from the model
+```{r}
+pvalue_estimate_sim = function(mu, n = 30,sigma = 5) {
+  data_simulation = tibble(x = rnorm(n = 30, mean = mu, sd = sigma)) |>
+    t.test() |>  
+    broom::tidy() |>  
+    select(estimate, p.value)
+  }
+
+expand_grid(population_mean = 0, time = 1:5000) |> 
+  mutate(result_df = map(population_mean, pvalue_estimate_sim)) |> 
+  unnest(result_df)
+```
+
+
+
 
