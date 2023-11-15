@@ -118,7 +118,7 @@ ggplot(zip_final,aes(x = week, y = obs, color = files_name),data_df) +
 ```
 
 #Problem 3
-#set the design elements and generate 5000 datasets from the model
+##set the design elements and generate 5000 datasets from the model
 ```{r}
 pvalue_estimate_sim = function(mu, n = 30,sigma = 5) {
   data_simulation = tibble(x = rnorm(n = 30, mean = mu, sd = sigma)) |>
@@ -132,6 +132,29 @@ expand_grid(population_mean = 0, time = 1:5000) |>
   unnest(result_df)
 ```
 
+##Repeat the above for μ={1,2,3,4,5,6}
 
+```{r}
+mean_6 =
+  expand_grid(population_mean = 1:6, time = 1:5000) |> 
+  mutate(result_df = map(population_mean, pvalue_estimate_sim)) |> 
+  unnest(result_df)
+```
+
+```{r}
+ggplot_mean_6 =
+  mean_6|>
+  filter(p.value < 0.05) |>
+  group_by(population_mean) |>
+  count() |>
+  mutate(proportion = n / 5000)
+
+ggplot(ggplot_mean_6,aes(x = population_mean, y = proportion)) +
+  geom_point() + 
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(x = "True Mean", y = "Power of the Test", title = "The Proportion of Times the Null was Rejected")
+```
 
 
